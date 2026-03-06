@@ -48,16 +48,8 @@ jobs:
           echo "OK: .github/PULL_REQUEST_TEMPLATE.md"
 
       - name: Check for broken links in README
-        run: |
-          echo "Validating internal links in README.md..."
-          links=$(grep -oP '\[.*?\]\((?!https?://)(.*?)\)' README.md | grep -oP '\(.*?\)' | tr -d '()' || true)
-          for link in $links; do
-            # Strip anchor fragments
-            file=$(echo "$link" | cut -d'#' -f1)
-            if [ -n "$file" ] && [ ! -f "$file" ]; then
-              echo "ERROR: Broken link in README.md -> $file"
-              exit 1
-            fi
-            echo "OK: $link"
-          done
-          echo "All internal links valid."
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress README.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
