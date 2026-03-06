@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate markdown files
+        run: |
+          echo "Checking required files exist..."
+          for file in README.md LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md; do
+            if [ ! -f "$file" ]; then
+              echo "ERROR: Missing required file: $file"
+              exit 1
+            fi
+            echo "OK: $file"
+          done
+
+      - name: Validate issue templates
+        run: |
+          echo "Checking issue templates..."
+          for file in .github/ISSUE_TEMPLATE/bug_report.md .github/ISSUE_TEMPLATE/feature_request.md; do
+            if [ ! -f "$file" ]; then
+              echo "ERROR: Missing template: $file"
+              exit 1
+            fi
+            echo "OK: $file"
+          done
+
+      - name: Validate PR template
+        run: |
+          if [ ! -f ".github/PULL_REQUEST_TEMPLATE.md" ]; then
+            echo "ERROR: Missing PR template"
+            exit 1
+          fi
+          echo "OK: .github/PULL_REQUEST_TEMPLATE.md"
+
+      - name: Check for broken links in README
+        run: |
+          echo "Validating internal links in README.md..."
+          links=$(grep -oP '\[.*?\]\((?!https?://)(.*?)\)' README.md | grep -oP '\(.*?\)' | tr -d '()' || true)
+          for link in $links; do
+            # Strip anchor fragments
+            file=$(echo "$link" | cut -d'#' -f1)
+            if [ -n "$file" ] && [ ! -f "$file" ]; then
+              echo "ERROR: Broken link in README.md -> $file"
+              exit 1
+            fi
+            echo "OK: $link"
+          done
+          echo "All internal links valid."
