@@ -74,11 +74,11 @@ All repositories in the BlackRoad OS ecosystem adhere to these principles:
 
 ### For Maintainers
 
-This repository's templates and workflows are inherited by other repositories in the organization. Changes here propagate across the ecosystem:
+This repository is the canonical source for shared templates and workflows used across the organization. Other repositories **do not inherit these automatically**; maintainers must explicitly copy, reuse, or sync them from here:
 
-- **Issue templates** in `.github/ISSUE_TEMPLATE/` define the standard format for bug reports and feature requests
-- **PR template** in `.github/PULL_REQUEST_TEMPLATE.md` ensures consistent review checklists
-- **CI workflows** in `.github/workflows/` provide baseline automation
+- **Issue templates** in `.github/ISSUE_TEMPLATE/` define the standard format for bug reports and feature requests and should be copied or symlinked into consuming repositories' `.github/ISSUE_TEMPLATE/` directories
+- **PR template** in `.github/PULL_REQUEST_TEMPLATE.md` ensures consistent review checklists and should be reused as the `PULL_REQUEST_TEMPLATE.md` in other repositories
+- **CI workflows** in `.github/workflows/` provide baseline automation and can be reused via [workflow `workflow_call`](https://docs.github.com/actions/using-workflows/reusing-workflows) or periodically synced into other repositories' `.github/workflows/` directories
 
 ## Contributing
 
